@@ -49,7 +49,7 @@ export default function TaskCard({ task, onEdit }) {
     return new Date(dateString).toLocaleDateString();
   };
 
-  const canEdit = isAdmin || task.createdBy === currentUser.id;
+  const canEdit = true;
 
   const isPastDue =
     new Date(task.dueDate) < new Date() && task.status === "todo";
@@ -229,45 +229,27 @@ export default function TaskCard({ task, onEdit }) {
         )}
 
         {canEdit && task.status !== "done" && task.status !== "cancel" && (
-          <div
-            className={`mt-4 flex flex-wrap gap-2 transition-opacity duration-200 ${
-              isHovered || isExpanded ? "opacity-100" : "opacity-90"
-            }`}
-          >
-            <button
-              onClick={() => onEdit(task)}
-              className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/edit"
-            >
-              {/* Button bubble effects */}
-              <span className="absolute top-0 right-1 w-1 h-1 bg-blue-300/60 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity"></span>
-              <span className="absolute bottom-0 left-1 w-1.5 h-1.5 bg-blue-200/40 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity delay-100"></span>
-              <FaEdit size={12} className="relative z-10" /> 
-              <span className="relative z-10">Edit</span>
-            </button>
-            <button
-              onClick={() => cancelTask()}
-              className="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/cancel"
-            >
-              {/* Button bubble effects */}
-              <span className="absolute top-0 right-1 w-1 h-1 bg-yellow-300/60 rounded-full opacity-0 group-hover/cancel:opacity-100 transition-opacity"></span>
-              <span className="absolute bottom-0 left-2 w-1 h-1 bg-yellow-200/40 rounded-full opacity-0 group-hover/cancel:opacity-100 transition-opacity delay-100"></span>
-              <FaTimes size={12} className="relative z-10" /> 
-              <span className="relative z-10">Cancel</span>
-            </button>
-            {isAdmin && (
-              <button
-                onClick={() => deleteTask()}
-                className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/del"
-              >
-                {/* Button bubble effects */}
-                <span className="absolute top-0 right-1 w-1 h-1 bg-red-300/60 rounded-full opacity-0 group-hover/del:opacity-100 transition-opacity"></span>
-                <span className="absolute bottom-0 left-2 w-1 h-1 bg-red-200/40 rounded-full opacity-0 group-hover/del:opacity-100 transition-opacity delay-100"></span>
-                <FaTrash size={12} className="relative z-10" /> 
-                <span className="relative z-10">Delete</span>
-              </button>
-            )}
-          </div>
-        )}
+  <div className="mt-4 flex flex-wrap gap-2 ...">
+    <button
+  onClick={() => onEdit(task)}
+  className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-1"
+>
+  <FaEdit /> Edit
+</button>
+<button
+  onClick={() => cancelTask()}
+  className="bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-1"
+>
+  <FaTimes /> Cancel
+</button>
+<button
+  onClick={() => deleteTask()}
+  className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-1"
+>
+  <FaTrash /> Delete
+</button>
+  </div>
+)}
 
         {/* Nút chuyển trạng thái cho user thường */}
         {canUpdateStatus && (
