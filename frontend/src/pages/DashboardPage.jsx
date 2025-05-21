@@ -471,12 +471,15 @@ export default function DashboardPage() {
                 started.
               </p>
             )}
-            <button
-              onClick={handleAddTask}
-              className="mt-6 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm font-medium transition"
-            >
-              <FaPlus size={14} /> Add New Task
-            </button>
+            {/* Ẩn nút Add New Task nếu đang ở filter Canceled */}
+            {filterStatus !== "cancel" && (
+              <button
+                onClick={handleAddTask}
+                className="mt-6 inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-sm font-medium transition"
+              >
+                <FaPlus size={14} /> Add New Task
+              </button>
+            )}
           </div>
         ) : (
           <>

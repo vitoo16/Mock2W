@@ -81,6 +81,19 @@ export default function TaskCard({ task, onEdit }) {
 
   const statusStyles = getStatusStyles(task.status);
 
+  // Lấy id của người tạo task (dù là object hay string)
+  const createdById =
+    typeof task.createdBy === "object" && task.createdBy !== null
+      ? task.createdBy._id
+      : task.createdBy;
+
+  const canUpdateStatus =
+    !isAdmin &&
+    currentUser &&
+    createdById === currentUser.id &&
+    task.status !== "done" &&
+    task.status !== "cancel";
+
   return (
     <div
       className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 ${statusStyles.border} border-l-4 relative overflow-hidden group`}
@@ -232,16 +245,6 @@ export default function TaskCard({ task, onEdit }) {
               <span className="relative z-10">Edit</span>
             </button>
             <button
-              onClick={() => completeTask()}
-              className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/comp"
-            >
-              {/* Button bubble effects */}
-              <span className="absolute top-0 right-1 w-1 h-1 bg-green-300/60 rounded-full opacity-0 group-hover/comp:opacity-100 transition-opacity"></span>
-              <span className="absolute bottom-0 left-2 w-1.5 h-1.5 bg-green-200/40 rounded-full opacity-0 group-hover/comp:opacity-100 transition-opacity delay-100"></span>
-              <FaCheck size={12} className="relative z-10" /> 
-              <span className="relative z-10">Complete</span>
-            </button>
-            <button
               onClick={() => cancelTask()}
               className="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/cancel"
             >
@@ -264,6 +267,17 @@ export default function TaskCard({ task, onEdit }) {
               </button>
             )}
           </div>
+        )}
+
+        {/* Nút chuyển trạng thái cho user thường */}
+        {canUpdateStatus && (
+          <button
+            onClick={() => completeTask()}
+            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow font-semibold"
+          >
+            {task.status === "todo" && "Start (In Progress)"}
+            {task.status === "in_progress" && "Mark as Done"}
+          </button>
         )}
       </div>
     </div>

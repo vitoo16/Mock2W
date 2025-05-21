@@ -231,7 +231,6 @@ export default function Navbar() {
                   to="/dashboard"
                   className="text-white hover:text-blue-200 px-4 py-2 rounded-md hover:bg-white/10 transition-all duration-200 backdrop-blur-sm relative group overflow-hidden"
                 >
-                  <FaTasks className="inline-block mr-2" />
                   Dashboard
                 </Link>
                 {isAdmin && (
@@ -239,7 +238,6 @@ export default function Navbar() {
                     to="/users"
                     className="text-white hover:text-blue-200 px-4 py-2 rounded-md hover:bg-white/10 transition-all duration-200 backdrop-blur-sm relative group overflow-hidden"
                   >
-                    <FaUserPlus className="inline-block mr-2" />
                     User Management
                   </Link>
                 )}
