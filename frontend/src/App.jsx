@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import UserManagementPage from "./pages/UserManagementPage";
 import {
   FaGithub,
   FaLinkedin,
@@ -26,6 +27,21 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+// Admin route component
+function AdminRoute({ children }) {
+  const { isAuthenticated, isAdmin } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -42,6 +58,14 @@ function App() {
                 <ProtectedRoute>
                   <DashboardPage />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <AdminRoute>
+                  <UserManagementPage />
+                </AdminRoute>
               }
             />
             <Route path="*" element={<Navigate to="/" replace />} />
