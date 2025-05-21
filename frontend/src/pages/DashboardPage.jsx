@@ -256,34 +256,7 @@ export default function DashboardPage() {
                 </span>
               )}
             </h1>{" "}
-            {/* <p className="text-gray-600 mt-1">
-              Welcome back,{" "}
-              <span className="font-semibold text-blue-700">
-                {tokenFullName ||
-                  currentUser?.fullname ||
-                  currentUser?.username ||
-                  "User"}
-                {!tokenFullName && (
-                  <button
-                    onClick={debugTokenAndUpdateName}
-                    className="ml-1 text-xs bg-blue-200 hover:bg-blue-300 text-blue-800 p-1 rounded"
-                    title="Click to try reading name from token again"
-                  >
-                    Try Fix
-                  </button>
-                )}
-              </span>
-              {isAdmin && (
-                <span className="text-blue-600 ml-2 text-sm">
-                  (viewing all tasks)
-                </span>
-              )}
-              {!isAdmin && (
-                <span className="text-gray-500 ml-2 text-sm">
-                  (viewing your assigned tasks)
-                </span>
-              )}
-            </p> */}
+            
           </div>
           <div className="flex flex-wrap gap-3">
             <div className="relative">
@@ -558,7 +531,7 @@ export default function DashboardPage() {
           </>
         )}
       </div>
-
+      
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <TaskForm task={editingTask} onClose={handleCloseModal} />
       </Modal>
