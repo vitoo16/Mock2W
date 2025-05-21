@@ -87,13 +87,6 @@ export default function TaskCard({ task, onEdit }) {
       ? task.createdBy._id
       : task.createdBy;
 
-  const canUpdateStatus =
-    !isAdmin &&
-    currentUser &&
-    createdById === currentUser.id &&
-    task.status !== "done" &&
-    task.status !== "cancel";
-
   return (
     <div
       className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 ${statusStyles.border} border-l-4 relative overflow-hidden group`}
@@ -146,13 +139,34 @@ export default function TaskCard({ task, onEdit }) {
             </p>
           </div>
 
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles.badge} relative overflow-hidden group/badge`}
-          >
-            {/* Small bubble in status badge */}
-            <span className="absolute top-0 right-1 w-1 h-1 bg-white/40 rounded-full opacity-0 group-hover/badge:opacity-100 transition-opacity"></span>
-            {task.status === "todo" ? "TO DO" : task.status.toUpperCase()}
-          </span>
+          <div className="flex flex-col items-center gap-2">
+  {/* Badge trạng thái chỉ để hiển thị */}
+  <span
+    className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles.badge} relative overflow-hidden`}
+    style={{ display: "inline-block" }}
+  >
+    {task.status === "todo"
+      ? "TO DO"
+      : task.status === "in_progress"
+      ? "IN PROGRESS"
+      : task.status.toUpperCase()}
+  </span>
+
+  {/* Nút update status, chỉ hiện khi được phép */}
+  
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        completeTask();
+      }}
+      className="px-3 py-1 rounded-full text-xs font-semibold border bg-blue-500 text-white hover:bg-blue-600 transition"
+      style={{ outline: "none", display: "inline-block" }}
+      title="Update Status"
+      type="button"
+    >
+      Update Status
+    </button>
+</div>
         </div>
 
         {!isExpanded && task.description && (
@@ -250,17 +264,6 @@ export default function TaskCard({ task, onEdit }) {
 </button>
   </div>
 )}
-
-        {/* Nút chuyển trạng thái cho user thường */}
-        {canUpdateStatus && (
-          <button
-            onClick={() => completeTask()}
-            className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow font-semibold"
-          >
-            {task.status === "todo" && "Start (In Progress)"}
-            {task.status === "in_progress" && "Mark as Done"}
-          </button>
-        )}
       </div>
     </div>
   );
