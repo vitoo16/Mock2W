@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 
 export default function TaskCard({ task, onEdit }) {
+  console.log("assignedTo:", task.assignedTo); 
   const { currentUser, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -30,6 +31,7 @@ export default function TaskCard({ task, onEdit }) {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
+  const isCreator = currentUser && task.createdBy === currentUser.fullname;
 
   const { mutate: cancelTask } = useMutation({
     mutationFn: () => softDeleteTask(task._id),
@@ -48,8 +50,6 @@ export default function TaskCard({ task, onEdit }) {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
-
-  const canEdit = true;
 
   const isPastDue =
     new Date(task.dueDate) < new Date() && task.status === "todo";
@@ -154,18 +154,20 @@ export default function TaskCard({ task, onEdit }) {
 
   {/* Nút update status, chỉ hiện khi được phép */}
   
+    {task.status === "todo" && (
     <button
       onClick={(e) => {
         e.stopPropagation();
         completeTask();
       }}
-      className="px-3 py-1 rounded-full text-xs font-semibold border bg-blue-500 text-white hover:bg-blue-600 transition"
+      className="px-5 py-1 rounded-full text-xs bg-green-500 font-semibold border text-white transition"
       style={{ outline: "none", display: "inline-block" }}
-      title="Update Status"
+      title="Finish"
       type="button"
     >
-      Update Status
+      Finish
     </button>
+     )}
 </div>
         </div>
 
@@ -215,24 +217,25 @@ export default function TaskCard({ task, onEdit }) {
               <h4 className="font-medium text-gray-800 flex items-center gap-1">
                 <FaUser className="text-blue-400" size={12} /> Assigned to:
               </h4>
+
               <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {Array.isArray(task.assignedTo) &&
-                task.assignedTo.length > 0 ? (
-                  task.assignedTo.map((user, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-block bg-blue-50 border border-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs relative overflow-hidden group/tag"
-                    >
-                      {/* Tag bubble */}
-                      <span className="absolute top-0 right-1 w-1 h-1 bg-blue-200/40 rounded-full opacity-0 group-hover/tag:opacity-100 transition-opacity"></span>
-                      {user}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-gray-500 text-xs italic">
-                    Not assigned
-                  </span>
-                )}
+                {Array.isArray(task.assignedTo)
+  ? (task.assignedTo.length > 0
+      ? task.assignedTo.map((user, idx) => (
+          <span
+            key={idx}
+            className="inline-block bg-blue-50 border border-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs relative overflow-hidden group/tag"
+          >
+            {user}
+          </span>
+        ))
+      : <span className="text-gray-500 text-xs italic">Not assigned</span>
+    )
+  : (task.assignedTo
+      ? <span className="inline-block bg-blue-50 border border-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs relative overflow-hidden group/tag">{task.assignedTo}</span>
+      : <span className="text-gray-500 text-xs italic">Not assigned</span>
+    )
+}
               </div>
             </div>
 
@@ -242,26 +245,27 @@ export default function TaskCard({ task, onEdit }) {
           </div>
         )}
 
-        {canEdit && task.status !== "done" && task.status !== "cancel" && (
-  <div className="mt-4 flex flex-wrap gap-2 ...">
+
+  {(isAdmin || isCreator) && task.status !== "done" && task.status !== "cancel" && (
+  <div className="mt-4 flex flex-wrap gap-2">
     <button
-  onClick={() => onEdit(task)}
-  className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-1"
->
-  <FaEdit /> Edit
-</button>
-<button
-  onClick={() => cancelTask()}
-  className="bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-1"
->
-  <FaTimes /> Cancel
-</button>
-<button
-  onClick={() => deleteTask()}
-  className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-1"
->
-  <FaTrash /> Delete
-</button>
+      onClick={() => onEdit(task)}
+      className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-1"
+    >
+      <FaEdit /> Edit
+    </button>
+    <button
+      onClick={() => cancelTask()}
+      className="bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-1"
+    >
+      <FaTimes /> Cancel
+    </button>
+    <button
+      onClick={() => deleteTask()}
+      className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-1"
+    >
+      <FaTrash /> Delete
+    </button>
   </div>
 )}
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTask, updateTask } from "../services/api";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { createTask, updateTask, getAllUsers } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { FaPlus, FaTimes, FaUser } from "react-icons/fa";
 
@@ -8,6 +8,14 @@ export default function TaskForm({ task = null, onClose }) {
   const { currentUser, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const isEditing = !!task;
+  const [assignedTo, setAssignedTo] = useState(task?.assignedTo || "");
+
+  const { data: users = [] } = useQuery({
+    queryKey: ["users"],
+    queryFn: getAllUsers,
+    
+  });
+
 
   const [formData, setFormData] = useState({
     title: "",
@@ -70,14 +78,14 @@ export default function TaskForm({ task = null, onClose }) {
   };
 
   const handleAddAssignee = () => {
-    if (assignee.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        assignedTo: [...prev.assignedTo, assignee.trim()],
-      }));
-      setAssignee("");
-    }
-  };
+  if (assignee.trim() && !formData.assignedTo.includes(assignee.trim())) {
+    setFormData((prev) => ({
+      ...prev,
+      assignedTo: [...prev.assignedTo, assignee.trim()],
+    }));
+    setAssignee("");
+  }
+};
 
   const handleRemoveAssignee = (index) => {
     setFormData((prev) => ({
@@ -118,6 +126,7 @@ export default function TaskForm({ task = null, onClose }) {
       // Ensure assignedTo is always an array
       assignedTo: Array.isArray(formData.assignedTo) ? formData.assignedTo : [],
     };
+     console.log("Task payload:", payload);
 
     if (isEditing) {
       updateTaskMutation({ id: task._id, data: payload });
@@ -219,19 +228,21 @@ export default function TaskForm({ task = null, onClose }) {
 
         {/* Assignee section - available to all users */}
         <div className="mb-5 pt-4 border-t border-gray-100">
-          <label className="flex items-center gap-2 text-gray-700 mb-2 font-medium">
-            <FaUser className="text-blue-500" />
-            Assign Task To
-          </label>
+          <label className="block mb-2 font-medium">Assign to</label>
 
           <div className="flex shadow-sm">
-            <input
-              type="text"
-              value={assignee}
-              onChange={(e) => setAssignee(e.target.value)}
-              className="flex-grow border border-gray-300 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
-              placeholder="Enter username to assign"
-            />
+            <select
+  value={assignee}
+  onChange={e => setAssignee(e.target.value)}
+  className="border rounded px-3 py-2 w-full"
+>
+  <option value="">-- Select user --</option>
+  {users.map(user => (
+    <option key={user._id} value={user._id}>
+      {user.fullname}
+    </option>
+  ))}
+</select>
             <button
               type="button"
               onClick={handleAddAssignee}
@@ -243,26 +254,34 @@ export default function TaskForm({ task = null, onClose }) {
 
           {/* Assignee tags */}
           {formData.assignedTo.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {formData.assignedTo.map((userId, index) => (
-                <div
-                  key={index}
-                  className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center text-sm border border-blue-100 shadow-sm hover:bg-blue-100 transition"
-                >
-                  <span className="font-medium">{userId}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAssignee(index)}
-                    className="ml-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full h-5 w-5 flex items-center justify-center transition"
-                    title="Remove assignee"
-                    aria-label={`Remove ${userId}`}
-                  >
-                    <FaTimes size={10} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+  <div className="mt-4 flex flex-wrap gap-2">
+    {formData.assignedTo.length > 0 && (
+  <div className="mt-4 flex flex-wrap gap-2">
+    {formData.assignedTo.map((userId, index) => {
+      const user = users.find(u => u._id === userId);
+      return (
+        <div
+          key={index}
+          className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full flex items-center text-sm border border-blue-100 shadow-sm hover:bg-blue-100 transition"
+        >
+          <span className="font-medium">{user ? user.fullname : userId}</span>
+          <button
+            type="button"
+            onClick={() => handleRemoveAssignee(index)}
+            className="ml-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full h-5 w-5 flex items-center justify-center transition"
+            title="Remove assignee"
+            aria-label={`Remove ${user ? user.fullname : userId}`}
+          >
+            <FaTimes size={10} />
+          </button>
+
+        </div>
+      );
+    })}
+  </div>
+)}
+  </div>
+)}
 
           {isAdmin ? (
             <p className="text-xs text-gray-500 mt-2 flex items-center">

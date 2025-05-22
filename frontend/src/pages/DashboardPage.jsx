@@ -13,6 +13,7 @@ import {
   FaTimesCircle,
   FaSearch,
   FaShieldAlt,
+  FaCalendarDay,
 } from "react-icons/fa";
 
 export default function DashboardPage() {
@@ -152,6 +153,13 @@ export default function DashboardPage() {
     canceled: tasks.filter((task) => task.status === "cancel").length,
   };
   const filteredTasks = tasks.filter((task) => {
+    if (filterStatus === "today") {
+      const dueDate = new Date(task.dueDate);
+      dueDate.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return dueDate.getTime() === today.getTime();
+    }
     if (filterStatus !== "all" && task.status !== filterStatus) return false;
 
     if (searchTerm.trim() !== "") {
@@ -181,7 +189,7 @@ export default function DashboardPage() {
           );
           // Call the debug function but suppress the alert
           const originalAlert = window.alert;
-          window.alert = () => {};
+          window.alert = () => { };
           debugTokenAndUpdateName();
           window.alert = originalAlert;
 
@@ -256,7 +264,7 @@ export default function DashboardPage() {
                 </span>
               )}
             </h1>{" "}
-            
+
           </div>
           <div className="flex flex-wrap gap-3">
             <div className="relative">
@@ -340,10 +348,9 @@ export default function DashboardPage() {
             <button
               onClick={() => setFilterStatus("all")}
               className={`px-5 py-2 rounded-lg font-medium transition flex items-center gap-2
-                ${
-                  filterStatus === "all"
-                    ? "bg-blue-600 text-white shadow-md"
-                    : "bg-gray-50 text-gray-700 hover:bg-blue-50 border border-gray-200"
+                ${filterStatus === "all"
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "bg-gray-50 text-gray-700 hover:bg-blue-50 border border-gray-200"
                 }`}
             >
               <FaTasks size={14} />
@@ -355,10 +362,9 @@ export default function DashboardPage() {
             <button
               onClick={() => setFilterStatus("todo")}
               className={`px-5 py-2 rounded-lg font-medium transition flex items-center gap-2
-                ${
-                  filterStatus === "todo"
-                    ? "bg-yellow-500 text-white shadow-md"
-                    : "bg-gray-50 text-gray-700 hover:bg-yellow-50 border border-gray-200"
+                ${filterStatus === "todo"
+                  ? "bg-yellow-500 text-white shadow-md"
+                  : "bg-gray-50 text-gray-700 hover:bg-yellow-50 border border-gray-200"
                 }`}
             >
               <FaHourglassHalf size={14} />
@@ -367,13 +373,35 @@ export default function DashboardPage() {
                 {taskStats.todo}
               </span>
             </button>
+            {/* Filter Today */}
+            <button
+              onClick={() => setFilterStatus("today")}
+              className={`px-5 py-2 rounded-lg font-medium transition flex items-center gap-2
+                ${filterStatus === "today"
+                  ? "bg-blue-500 text-white shadow-md"
+                  : "bg-gray-50 text-gray-700 hover:bg-blue-50 border border-gray-200"
+                }`}
+            >
+              <FaCalendarDay size={14} />
+              Today
+              <span className="bg-white bg-opacity-20 text-xs py-0.5 px-2 rounded-full ml-1">
+                {
+                  tasks.filter((task) => {
+                    const dueDate = new Date(task.dueDate);
+                    dueDate.setHours(0, 0, 0, 0);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return dueDate.getTime() === today.getTime();
+                  }).length
+                }
+              </span>
+            </button>
             <button
               onClick={() => setFilterStatus("done")}
               className={`px-5 py-2 rounded-lg font-medium transition flex items-center gap-2
-                ${
-                  filterStatus === "done"
-                    ? "bg-green-600 text-white shadow-md"
-                    : "bg-gray-50 text-gray-700 hover:bg-green-50 border border-gray-200"
+                ${filterStatus === "done"
+                  ? "bg-green-600 text-white shadow-md"
+                  : "bg-gray-50 text-gray-700 hover:bg-green-50 border border-gray-200"
                 }`}
             >
               <FaCheckCircle size={14} />
@@ -385,10 +413,9 @@ export default function DashboardPage() {
             <button
               onClick={() => setFilterStatus("cancel")}
               className={`px-5 py-2 rounded-lg font-medium transition flex items-center gap-2
-                ${
-                  filterStatus === "cancel"
-                    ? "bg-red-600 text-white shadow-md"
-                    : "bg-gray-50 text-gray-700 hover:bg-red-50 border border-gray-200"
+                ${filterStatus === "cancel"
+                  ? "bg-red-600 text-white shadow-md"
+                  : "bg-gray-50 text-gray-700 hover:bg-red-50 border border-gray-200"
                 }`}
             >
               <FaTimesCircle size={14} />
@@ -474,7 +501,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
-            
+
             {groupedTasks.today.length > 0 && (
               <div className="mb-8">
                 <h2 className="font-bold text-lg text-blue-700 mb-4 flex items-center gap-2">
@@ -531,7 +558,7 @@ export default function DashboardPage() {
           </>
         )}
       </div>
-      
+
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <TaskForm task={editingTask} onClose={handleCloseModal} />
       </Modal>
