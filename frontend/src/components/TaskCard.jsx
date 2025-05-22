@@ -154,6 +154,7 @@ export default function TaskCard({ task, onEdit }) {
 
   {/* Nút update status, chỉ hiện khi được phép */}
   
+    {task.status === "todo" && (
     <button
       onClick={(e) => {
         e.stopPropagation();
@@ -161,11 +162,12 @@ export default function TaskCard({ task, onEdit }) {
       }}
       className="px-3 py-1 rounded-full text-xs font-semibold border bg-blue-500 text-white hover:bg-blue-600 transition"
       style={{ outline: "none", display: "inline-block" }}
-      title="Update Status"
+      title="Finish"
       type="button"
     >
-      Update Status
+      Finish
     </button>
+     )}
 </div>
         </div>
 
