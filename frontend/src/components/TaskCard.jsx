@@ -31,6 +31,7 @@ export default function TaskCard({ task, onEdit }) {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
+  const isCreator = currentUser && task.createdBy === currentUser.fullname;
 
   const { mutate: cancelTask } = useMutation({
     mutationFn: () => softDeleteTask(task._id),
@@ -49,8 +50,6 @@ export default function TaskCard({ task, onEdit }) {
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
-
-  const canEdit = true;
 
   const isPastDue =
     new Date(task.dueDate) < new Date() && task.status === "todo";
@@ -246,26 +245,27 @@ export default function TaskCard({ task, onEdit }) {
           </div>
         )}
 
-        {canEdit && task.status !== "done" && task.status !== "cancel" && (
-  <div className="mt-4 flex flex-wrap gap-2 ...">
+
+  {(isAdmin || isCreator) && task.status !== "done" && task.status !== "cancel" && (
+  <div className="mt-4 flex flex-wrap gap-2">
     <button
-  onClick={() => onEdit(task)}
-  className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-1"
->
-  <FaEdit /> Edit
-</button>
-<button
-  onClick={() => cancelTask()}
-  className="bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-1"
->
-  <FaTimes /> Cancel
-</button>
-<button
-  onClick={() => deleteTask()}
-  className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-1"
->
-  <FaTrash /> Delete
-</button>
+      onClick={() => onEdit(task)}
+      className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-1"
+    >
+      <FaEdit /> Edit
+    </button>
+    <button
+      onClick={() => cancelTask()}
+      className="bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-1"
+    >
+      <FaTimes /> Cancel
+    </button>
+    <button
+      onClick={() => deleteTask()}
+      className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-1"
+    >
+      <FaTrash /> Delete
+    </button>
   </div>
 )}
       </div>
