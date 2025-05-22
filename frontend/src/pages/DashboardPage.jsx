@@ -474,7 +474,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
-
+            
             {groupedTasks.today.length > 0 && (
               <div className="mb-8">
                 <h2 className="font-bold text-lg text-blue-700 mb-4 flex items-center gap-2">
