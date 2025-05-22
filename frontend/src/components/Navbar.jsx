@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FaUserCircle, FaSignOutAlt, FaTasks } from "react-icons/fa";
+import { FaUserCircle, FaSignOutAlt, FaTasks, FaUserPlus } from "react-icons/fa";
 
 export default function Navbar() {
   const {
@@ -11,6 +11,7 @@ export default function Navbar() {
     getFullNameFromToken,
     parseTokenManually,
     debugToken,
+    isAdmin,
   } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -230,13 +231,16 @@ export default function Navbar() {
                   to="/dashboard"
                   className="text-white hover:text-blue-200 px-4 py-2 rounded-md hover:bg-white/10 transition-all duration-200 backdrop-blur-sm relative group overflow-hidden"
                 >
-                  {/* Dashboard link bubbles */}
-                  <div className="absolute bottom-0 left-1/4 w-2 h-2 bg-blue-300/30 rounded-full opacity-0 group-hover:opacity-100 transform group-hover:translate-y-1 transition-all"></div>
-                  <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-indigo-200/40 rounded-full opacity-0 group-hover:opacity-100 transition-all delay-200"></div>
-                  
-                  <span className="relative z-10">Dashboard</span>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-md blur-sm transition-opacity"></div>
+                  Dashboard
                 </Link>
+                {isAdmin && (
+                  <Link
+                    to="/users"
+                    className="text-white hover:text-blue-200 px-4 py-2 rounded-md hover:bg-white/10 transition-all duration-200 backdrop-blur-sm relative group overflow-hidden"
+                  >
+                    User Management
+                  </Link>
+                )}
                 {/* Logout button */}
                 <button
                   onClick={handleLogout}

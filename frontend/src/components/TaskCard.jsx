@@ -49,7 +49,7 @@ export default function TaskCard({ task, onEdit }) {
     return new Date(dateString).toLocaleDateString();
   };
 
-  const canEdit = isAdmin || task.createdBy === currentUser.id;
+  const canEdit = true;
 
   const isPastDue =
     new Date(task.dueDate) < new Date() && task.status === "todo";
@@ -80,6 +80,12 @@ export default function TaskCard({ task, onEdit }) {
   };
 
   const statusStyles = getStatusStyles(task.status);
+
+  // Lấy id của người tạo task (dù là object hay string)
+  const createdById =
+    typeof task.createdBy === "object" && task.createdBy !== null
+      ? task.createdBy._id
+      : task.createdBy;
 
   return (
     <div
@@ -133,13 +139,34 @@ export default function TaskCard({ task, onEdit }) {
             </p>
           </div>
 
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles.badge} relative overflow-hidden group/badge`}
-          >
-            {/* Small bubble in status badge */}
-            <span className="absolute top-0 right-1 w-1 h-1 bg-white/40 rounded-full opacity-0 group-hover/badge:opacity-100 transition-opacity"></span>
-            {task.status === "todo" ? "TO DO" : task.status.toUpperCase()}
-          </span>
+          <div className="flex flex-col items-center gap-2">
+  {/* Badge trạng thái chỉ để hiển thị */}
+  <span
+    className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusStyles.badge} relative overflow-hidden`}
+    style={{ display: "inline-block" }}
+  >
+    {task.status === "todo"
+      ? "TO DO"
+      : task.status === "in_progress"
+      ? "IN PROGRESS"
+      : task.status.toUpperCase()}
+  </span>
+
+  {/* Nút update status, chỉ hiện khi được phép */}
+  
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        completeTask();
+      }}
+      className="px-3 py-1 rounded-full text-xs font-semibold border bg-blue-500 text-white hover:bg-blue-600 transition"
+      style={{ outline: "none", display: "inline-block" }}
+      title="Update Status"
+      type="button"
+    >
+      Update Status
+    </button>
+</div>
         </div>
 
         {!isExpanded && task.description && (
@@ -216,55 +243,27 @@ export default function TaskCard({ task, onEdit }) {
         )}
 
         {canEdit && task.status !== "done" && task.status !== "cancel" && (
-          <div
-            className={`mt-4 flex flex-wrap gap-2 transition-opacity duration-200 ${
-              isHovered || isExpanded ? "opacity-100" : "opacity-90"
-            }`}
-          >
-            <button
-              onClick={() => onEdit(task)}
-              className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/edit"
-            >
-              {/* Button bubble effects */}
-              <span className="absolute top-0 right-1 w-1 h-1 bg-blue-300/60 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity"></span>
-              <span className="absolute bottom-0 left-1 w-1.5 h-1.5 bg-blue-200/40 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity delay-100"></span>
-              <FaEdit size={12} className="relative z-10" /> 
-              <span className="relative z-10">Edit</span>
-            </button>
-            <button
-              onClick={() => completeTask()}
-              className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/comp"
-            >
-              {/* Button bubble effects */}
-              <span className="absolute top-0 right-1 w-1 h-1 bg-green-300/60 rounded-full opacity-0 group-hover/comp:opacity-100 transition-opacity"></span>
-              <span className="absolute bottom-0 left-2 w-1.5 h-1.5 bg-green-200/40 rounded-full opacity-0 group-hover/comp:opacity-100 transition-opacity delay-100"></span>
-              <FaCheck size={12} className="relative z-10" /> 
-              <span className="relative z-10">Complete</span>
-            </button>
-            <button
-              onClick={() => cancelTask()}
-              className="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/cancel"
-            >
-              {/* Button bubble effects */}
-              <span className="absolute top-0 right-1 w-1 h-1 bg-yellow-300/60 rounded-full opacity-0 group-hover/cancel:opacity-100 transition-opacity"></span>
-              <span className="absolute bottom-0 left-2 w-1 h-1 bg-yellow-200/40 rounded-full opacity-0 group-hover/cancel:opacity-100 transition-opacity delay-100"></span>
-              <FaTimes size={12} className="relative z-10" /> 
-              <span className="relative z-10">Cancel</span>
-            </button>
-            {isAdmin && (
-              <button
-                onClick={() => deleteTask()}
-                className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-lg text-sm font-medium shadow-sm hover:shadow transition relative overflow-hidden group/del"
-              >
-                {/* Button bubble effects */}
-                <span className="absolute top-0 right-1 w-1 h-1 bg-red-300/60 rounded-full opacity-0 group-hover/del:opacity-100 transition-opacity"></span>
-                <span className="absolute bottom-0 left-2 w-1 h-1 bg-red-200/40 rounded-full opacity-0 group-hover/del:opacity-100 transition-opacity delay-100"></span>
-                <FaTrash size={12} className="relative z-10" /> 
-                <span className="relative z-10">Delete</span>
-              </button>
-            )}
-          </div>
-        )}
+  <div className="mt-4 flex flex-wrap gap-2 ...">
+    <button
+  onClick={() => onEdit(task)}
+  className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-1"
+>
+  <FaEdit /> Edit
+</button>
+<button
+  onClick={() => cancelTask()}
+  className="bg-yellow-500 text-white px-4 py-2 rounded flex items-center gap-1"
+>
+  <FaTimes /> Cancel
+</button>
+<button
+  onClick={() => deleteTask()}
+  className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-1"
+>
+  <FaTrash /> Delete
+</button>
+  </div>
+)}
       </div>
     </div>
   );

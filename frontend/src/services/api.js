@@ -75,4 +75,25 @@ export const hardDeleteTask = async (taskId) => {
   return response.data;
 };
 
+// User Management APIs
+export const getAllUsers = async (fullname = '') => {
+  const response = await api.get(`/users${fullname ? `?fullname=${fullname}` : ''}`);
+  return response.data;
+};
+
+export const updateUser = async (userId, userData) => {
+  const response = await api.put(`/users/${userId}`, userData);
+  return response.data;
+};
+
+export const softDeleteUser = async (userId) => {
+  const response = await api.patch(`/users/${userId}/soft-delete`);
+  return response.data;
+};
+
+export const hardDeleteUser = async (userId) => {
+  const response = await api.delete(`/users/${userId}`);
+  return response.data;
+};
+
 export default api;
