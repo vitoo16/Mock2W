@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 
 export default function TaskCard({ task, onEdit }) {
+  console.log("assignedTo:", task.assignedTo); 
   const { currentUser, isAdmin } = useAuth();
   const queryClient = useQueryClient();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -160,7 +161,7 @@ export default function TaskCard({ task, onEdit }) {
         e.stopPropagation();
         completeTask();
       }}
-      className="px-3 py-1 rounded-full text-xs font-semibold border bg-blue-500 text-white hover:bg-blue-600 transition"
+      className="px-5 py-1 rounded-full text-xs bg-green-500 font-semibold border text-white transition"
       style={{ outline: "none", display: "inline-block" }}
       title="Finish"
       type="button"
@@ -217,24 +218,25 @@ export default function TaskCard({ task, onEdit }) {
               <h4 className="font-medium text-gray-800 flex items-center gap-1">
                 <FaUser className="text-blue-400" size={12} /> Assigned to:
               </h4>
+
               <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {Array.isArray(task.assignedTo) &&
-                task.assignedTo.length > 0 ? (
-                  task.assignedTo.map((user, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-block bg-blue-50 border border-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs relative overflow-hidden group/tag"
-                    >
-                      {/* Tag bubble */}
-                      <span className="absolute top-0 right-1 w-1 h-1 bg-blue-200/40 rounded-full opacity-0 group-hover/tag:opacity-100 transition-opacity"></span>
-                      {user}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-gray-500 text-xs italic">
-                    Not assigned
-                  </span>
-                )}
+                {Array.isArray(task.assignedTo)
+  ? (task.assignedTo.length > 0
+      ? task.assignedTo.map((user, idx) => (
+          <span
+            key={idx}
+            className="inline-block bg-blue-50 border border-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs relative overflow-hidden group/tag"
+          >
+            {user}
+          </span>
+        ))
+      : <span className="text-gray-500 text-xs italic">Not assigned</span>
+    )
+  : (task.assignedTo
+      ? <span className="inline-block bg-blue-50 border border-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs relative overflow-hidden group/tag">{task.assignedTo}</span>
+      : <span className="text-gray-500 text-xs italic">Not assigned</span>
+    )
+}
               </div>
             </div>
 
