@@ -77,7 +77,15 @@ export const hardDeleteTask = async (taskId) => {
 
 // User Management APIs
 export const getAllUsers = async (fullname = '') => {
-  const response = await api.get(`/users${fullname ? `?fullname=${fullname}` : ''}`);
+  let query = '';
+  if (typeof fullname === 'object' && fullname !== null) {
+    // Nếu là object, chuyển thành query string
+    query = '?' + new URLSearchParams(fullname).toString();
+  } else if (fullname) {
+    // Nếu là chuỗi, truyền như cũ
+    query = `?fullname=${fullname}`;
+  }
+  const response = await api.get(`/users${query}`);
   return response.data;
 };
 
